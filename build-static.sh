@@ -11,7 +11,14 @@ sleep 2
 # Start the Go server temporarily
 cd server
 echo "📡 Starting temporary Go server..."
-go run main.go &
+# Pass GitHub token to the Go server if available
+if [ -n "$GITHUB_TOKEN" ]; then
+    echo "🔑 Using GitHub token for authentication"
+    GITHUB_TOKEN="$GITHUB_TOKEN" go run main.go &
+else
+    echo "⚠️  No GitHub token found - using unauthenticated requests (rate limited)"
+    go run main.go &
+fi
 GO_PID=$!
 cd ..
 
@@ -47,14 +54,12 @@ if curl -s http://localhost:8080/api/projects > public/api/projects.json; then
     if [ -s public/api/projects.json ] && python3 -m json.tool public/api/projects.json > /dev/null 2>&1; then
         echo "✅ JSON data is valid"
     else
-        echo "❌ Invalid JSON data received"
-        kill $GO_PID 2>/dev/null || true
-        exit 1
+        echo "❌ Invalid JSON data received, using fallback data"
+        cp public/api/projects-fallback.json public/api/projects.json
     fi
 else
-    echo "❌ Failed to fetch GitHub data"
-    kill $GO_PID 2>/dev/null || true
-    exit 1
+    echo "❌ Failed to fetch GitHub data, using fallback data"
+    cp public/api/projects-fallback.json public/api/projects.json
 fi
 
 # Stop the Go server

@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -50,19 +51,36 @@ func fetchGitHubRepos(username string) ([]GitHubRepo, error) {
 		Timeout: 10 * time.Second,
 	}
 	
-	resp, err := client.Get(url)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %v", err)
+	}
+	
+	// Add GitHub token if available
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		req.Header.Set("Authorization", "token "+token)
+		log.Printf("Using GitHub token for authentication")
+	} else {
+		log.Printf("No GitHub token found, using unauthenticated requests (rate limited)")
+	}
+	
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+	req.Header.Set("User-Agent", "GitHub-Portfolio-API/1.0")
+	
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch repositories: %v", err)
 	}
 	defer resp.Body.Close()
 	
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("GitHub API returned status: %d", resp.StatusCode)
-	}
-	
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %v", err)
+	}
+	
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("GitHub API response: %s", string(body))
+		return nil, fmt.Errorf("GitHub API returned status: %d, body: %s", resp.StatusCode, string(body))
 	}
 	
 	var repos []GitHubRepo

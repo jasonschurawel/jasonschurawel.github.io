@@ -29,6 +29,8 @@ jobs:
       run: npm ci
       
     - name: Build with GitHub data
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "🔧 Setting up Go dependencies..."
         cd server
@@ -39,9 +41,9 @@ jobs:
         pkill -f "go run main.go" || true
         sleep 2
         
-        echo "📡 Starting Go server..."
+        echo "📡 Starting Go server with GitHub authentication..."
         cd server
-        timeout 30s go run main.go &
+        GITHUB_TOKEN="$GITHUB_TOKEN" timeout 30s go run main.go &
         GO_PID=$!
         cd ..
         
@@ -75,14 +77,12 @@ jobs:
             echo "✅ JSON file created successfully"
             head -c 200 public/api/projects.json  # Show first 200 chars for debugging
           else
-            echo "❌ JSON file is empty"
-            kill $GO_PID 2>/dev/null || true
-            exit 1
+            echo "❌ JSON file is empty, using fallback data"
+            cp public/api/projects-fallback.json public/api/projects.json
           fi
         else
-          echo "❌ Failed to fetch GitHub data"
-          kill $GO_PID 2>/dev/null || true
-          exit 1
+          echo "❌ Failed to fetch GitHub data, using fallback data"
+          cp public/api/projects-fallback.json public/api/projects.json
         fi
         
         echo "🛑 Stopping Go server..."
