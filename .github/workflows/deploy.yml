@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+# Add permissions for GitHub token
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -43,46 +49,54 @@ jobs:
         
         echo "📡 Starting Go server with GitHub authentication..."
         cd server
-        GITHUB_TOKEN="$GITHUB_TOKEN" timeout 30s go run main.go &
+        echo "🔧 Server environment check:"
+        echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
+        GITHUB_TOKEN="$GITHUB_TOKEN" timeout 60s go run main.go &
         GO_PID=$!
         cd ..
         
-        echo "⏳ Waiting for server to start..."
-        sleep 8
+        echo "⏳ Waiting for server to start (extended timeout)..."
+        sleep 15
         
-        echo "🔍 Checking server health..."
-        RETRIES=10
+        echo "🔍 Checking server health with extended retries..."
+        RETRIES=15
         while [ $RETRIES -gt 0 ]; do
           if curl -f -s http://localhost:8080/api/health > /dev/null; then
             echo "✅ Go server is responding"
             break
           fi
           echo "⏳ Waiting for server... ($RETRIES attempts left)"
-          sleep 2
+          sleep 3
           RETRIES=$((RETRIES-1))
         done
         
         if [ $RETRIES -eq 0 ]; then
-          echo "❌ Server failed to start"
-          kill $GO_PID 2>/dev/null || true
-          exit 1
-        fi
-        
-        echo "📊 Fetching GitHub repositories..."
-        mkdir -p public/api
-        if curl -f -s http://localhost:8080/api/projects > public/api/projects.json; then
-          echo "✅ GitHub data fetched successfully"
-          # Verify JSON is valid and not empty
-          if [ -s public/api/projects.json ]; then
-            echo "✅ JSON file created successfully"
-            head -c 200 public/api/projects.json  # Show first 200 chars for debugging
+          echo "❌ Server failed to start after 45 seconds"
+          echo "🔍 Checking if server process is running:"
+          ps aux | grep "go run" || true
+          echo "🔍 Checking port 8080:"
+          netstat -tlpn | grep :8080 || true
+          echo "🔄 Using fallback data due to server failure"
+          mkdir -p public/api
+          cp public/api/projects-fallback.json public/api/projects.json
+        else
+          echo "📊 Fetching GitHub repositories..."
+          mkdir -p public/api
+          if curl -f -s -w "HTTP Status: %{http_code}\n" http://localhost:8080/api/projects > public/api/projects.json; then
+            echo "✅ GitHub data fetched successfully"
+            # Verify JSON is valid and not empty
+            if [ -s public/api/projects.json ]; then
+              echo "✅ JSON file created successfully"
+              echo "📊 Data preview:"
+              head -c 300 public/api/projects.json  # Show first 300 chars for debugging
+            else
+              echo "❌ JSON file is empty, using fallback data"
+              cp public/api/projects-fallback.json public/api/projects.json
+            fi
           else
-            echo "❌ JSON file is empty, using fallback data"
+            echo "❌ Failed to fetch GitHub data, using fallback data"
             cp public/api/projects-fallback.json public/api/projects.json
           fi
-        else
-          echo "❌ Failed to fetch GitHub data, using fallback data"
-          cp public/api/projects-fallback.json public/api/projects.json
         fi
         
         echo "🛑 Stopping Go server..."
@@ -113,3 +127,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
+        force_orphan: true
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: 'Deploy to GitHub Pages'

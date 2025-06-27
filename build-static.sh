@@ -24,17 +24,17 @@ cd ..
 
 # Wait for server to start
 echo "⏳ Waiting for Go server to start..."
-sleep 5
+sleep 8
 
 # Check if server is running with retries
-RETRIES=5
+RETRIES=10
 while [ $RETRIES -gt 0 ]; do
     if curl -s http://localhost:8080/api/health > /dev/null; then
         echo "✅ Go server is running"
         break
     fi
     echo "⏳ Retrying... ($RETRIES attempts left)"
-    sleep 2
+    sleep 3
     RETRIES=$((RETRIES-1))
 done
 

@@ -105,11 +105,16 @@ func fetchGitHubRepos(username string) ([]GitHubRepo, error) {
 func getProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	username := "jasonschurawel" // Your GitHub username
 	
+	log.Printf("📡 Fetching repositories for user: %s", username)
+	
 	repos, err := fetchGitHubRepos(username)
 	if err != nil {
+		log.Printf("❌ Error fetching repositories: %v", err)
 		http.Error(w, fmt.Sprintf("Error fetching repositories: %v", err), http.StatusInternalServerError)
 		return
 	}
+	
+	log.Printf("✅ Successfully fetched %d repositories", len(repos))
 	
 	response := ProjectResponse{
 		Projects:    repos,
@@ -117,7 +122,13 @@ func getProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("❌ Error encoding response: %v", err)
+		http.Error(w, "Error encoding response", http.StatusInternalServerError)
+		return
+	}
+	
+	log.Printf("✅ Response sent successfully")
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
@@ -138,5 +149,20 @@ func main() {
 	fmt.Printf("  GET http://localhost:%s/api/projects\n", port)
 	fmt.Printf("  GET http://localhost:%s/api/health\n", port)
 	
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	// Check if GitHub token is available
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		fmt.Printf("✅ GitHub token available (length: %d)\n", len(token))
+	} else {
+		fmt.Printf("⚠️  No GitHub token - using unauthenticated requests\n")
+	}
+	
+	server := &http.Server{
+		Addr:         ":" + port,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+	
+	fmt.Printf("🚀 Server ready and listening...\n")
+	log.Fatal(server.ListenAndServe())
 }
