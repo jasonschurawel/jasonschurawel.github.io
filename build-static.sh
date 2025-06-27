@@ -58,13 +58,18 @@ else
 fi
 
 # Stop the Go server
-kill $GO_PID 2>/dev/null
+kill $GO_PID 2>/dev/null || true
 echo "🛑 Stopped temporary Go server"
 
-# Update React to use static data instead of API call
+# Build React app
 echo "🔄 Building React app..."
 npm run build
 
+# Copy the GitHub data to the build output
+echo "📋 Copying GitHub data to build output..."
+mkdir -p dist/api
+cp public/api/projects.json dist/api/
+
 echo "🎉 Build complete! Ready for GitHub Pages deployment."
 echo "📁 Static files in: dist/"
-echo "📊 GitHub data cached in: public/api/projects.json"
+echo "📊 GitHub data cached in: dist/api/projects.json"
