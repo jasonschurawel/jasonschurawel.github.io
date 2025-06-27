@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:static": "./build-static.sh",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build:static && gh-pages -d dist",
+    "deploy:dev": "npm run build && gh-pages -d dist"
   },
   "repository": {
     "type": "git",

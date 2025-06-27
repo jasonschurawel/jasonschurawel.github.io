@@ -29,10 +29,19 @@ function App() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/projects');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Try local API first (for development)
+        let response;
+        try {
+          response = await fetch('http://localhost:8080/api/projects');
+          if (!response.ok) throw new Error('API not available');
+        } catch {
+          // Fallback to static JSON (for production/GitHub Pages)
+          response = await fetch('/api/projects.json');
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
         }
+        
         const data: ProjectResponse = await response.json();
         setProjects(data.projects);
         setLastUpdated(data.lastUpdated);

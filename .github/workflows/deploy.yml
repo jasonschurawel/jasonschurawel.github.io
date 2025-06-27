@@ -20,11 +20,34 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
     - name: Install dependencies
       run: npm ci
       
-    - name: Build
-      run: npm run build
+    - name: Build with GitHub data
+      run: |
+        # Start Go server in background
+        cd server
+        go run main.go &
+        GO_PID=$!
+        cd ..
+        
+        # Wait for server to start
+        sleep 5
+        
+        # Create API directory and fetch data
+        mkdir -p public/api
+        curl -s http://localhost:8080/api/projects > public/api/projects.json
+        
+        # Stop Go server
+        kill $GO_PID
+        
+        # Build React app
+        npm run build
       
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
