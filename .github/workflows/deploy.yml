@@ -30,24 +30,76 @@ jobs:
       
     - name: Build with GitHub data
       run: |
-        # Start Go server in background
+        echo "🔧 Setting up Go dependencies..."
         cd server
-        go run main.go &
+        go mod tidy
+        cd ..
+        
+        echo "🧹 Cleaning up any existing processes..."
+        pkill -f "go run main.go" || true
+        sleep 2
+        
+        echo "📡 Starting Go server..."
+        cd server
+        timeout 30s go run main.go &
         GO_PID=$!
         cd ..
         
-        # Wait for server to start
-        sleep 5
+        echo "⏳ Waiting for server to start..."
+        sleep 8
         
-        # Create API directory and fetch data
+        echo "🔍 Checking server health..."
+        RETRIES=10
+        while [ $RETRIES -gt 0 ]; do
+          if curl -f -s http://localhost:8080/api/health > /dev/null; then
+            echo "✅ Go server is responding"
+            break
+          fi
+          echo "⏳ Waiting for server... ($RETRIES attempts left)"
+          sleep 2
+          RETRIES=$((RETRIES-1))
+        done
+        
+        if [ $RETRIES -eq 0 ]; then
+          echo "❌ Server failed to start"
+          kill $GO_PID 2>/dev/null || true
+          exit 1
+        fi
+        
+        echo "📊 Fetching GitHub repositories..."
         mkdir -p public/api
-        curl -s http://localhost:8080/api/projects > public/api/projects.json
+        if curl -f -s http://localhost:8080/api/projects > public/api/projects.json; then
+          echo "✅ GitHub data fetched successfully"
+          # Verify JSON is valid and not empty
+          if [ -s public/api/projects.json ]; then
+            echo "✅ JSON file created successfully"
+            head -c 200 public/api/projects.json  # Show first 200 chars for debugging
+          else
+            echo "❌ JSON file is empty"
+            kill $GO_PID 2>/dev/null || true
+            exit 1
+          fi
+        else
+          echo "❌ Failed to fetch GitHub data"
+          kill $GO_PID 2>/dev/null || true
+          exit 1
+        fi
         
-        # Stop Go server
-        kill $GO_PID
+        echo "🛑 Stopping Go server..."
+        kill $GO_PID 2>/dev/null || true
+        sleep 2
         
-        # Build React app
+        echo "🔄 Building React application..."
         npm run build
+        
+        echo "📁 Checking build output..."
+        if [ -d "dist" ] && [ "$(ls -A dist)" ]; then
+          echo "✅ Build successful - dist directory contains files"
+          ls -la dist/
+        else
+          echo "❌ Build failed - dist directory is missing or empty"
+          exit 1
+        fi
       
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
