@@ -127,32 +127,15 @@ function App() {
           throw new Error('Empty response received');
         }
         
-        // Try to parse JSON with better error handling
+        // Parse JSON
         let data: ProjectResponse;
         try {
           data = JSON.parse(responseText);
         } catch (parseError) {
           console.error('JSON Parse Error:', parseError);
-          console.error('Response text:', responseText);
-          console.error('Response text length:', responseText.length);
-          console.error('First 200 chars:', responseText.substring(0, 200));
-          console.error('Last 100 chars:', responseText.substring(Math.max(0, responseText.length - 100)));
-          console.error('Character codes at end:', responseText.slice(-10).split('').map(c => c.charCodeAt(0)));
-          
-          // Try to clean the response and parse again
-          const cleanedText = responseText.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
-          if (cleanedText !== responseText) {
-            console.log('Attempting to parse cleaned text...');
-            try {
-              data = JSON.parse(cleanedText);
-              console.log('Successfully parsed cleaned JSON');
-            } catch (cleanParseError) {
-              console.error('Cleaned parse also failed:', cleanParseError);
-              throw new Error(`Invalid JSON format: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`);
-            }
-          } else {
-            throw new Error(`Invalid JSON format: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`);
-          }
+          console.error('Full JSON response:');
+          console.error(responseText);
+          throw new Error(`JSON parsing failed: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
         }
         
         // Validate data structure

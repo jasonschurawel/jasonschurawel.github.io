@@ -14,10 +14,10 @@ echo "📡 Starting temporary Go server..."
 # Pass GitHub token to the Go server if available
 if [ -n "$GITHUB_TOKEN" ]; then
     echo "🔑 Using GitHub token for authentication"
-    GITHUB_TOKEN="$GITHUB_TOKEN" go run main.go &
+    GITHUB_TOKEN="$GITHUB_TOKEN" go run main.go > /dev/null 2>&1 &
 else
     echo "⚠️  No GitHub token found - using unauthenticated requests (rate limited)"
-    go run main.go &
+    go run main.go > /dev/null 2>&1 &
 fi
 GO_PID=$!
 cd ..

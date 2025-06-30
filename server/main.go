@@ -128,7 +128,7 @@ func getProjectsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	log.Printf("✅ Response sent successfully")
+	// Don't log after sending response to avoid polluting JSON output
 }
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
