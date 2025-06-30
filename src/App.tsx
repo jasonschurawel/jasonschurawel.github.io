@@ -223,7 +223,7 @@ function App() {
                   size="small"
                   sx={{
                     ml: 1,
-                    bgcolor: '#C8E6C9', // Soft green
+                    bgcolor: '#C8E6C9', // Pastel yellow for contrast
                     color: '#2C3E50',
                     fontWeight: 500,
                     fontSize: '0.75rem',
@@ -432,9 +432,9 @@ function App() {
                     display: 'flex', 
                     flexDirection: 'column',
                     border: '2px dashed',
-                    borderColor: 'primary.light',
-                    bgcolor: 'primary.light',
-                    opacity: 0.7,
+                    borderColor: '#F5D896', // Yellow border
+                    bgcolor: '#F8F9FA', // Light background
+                    opacity: 0.9,
                   }}
                 >
                   <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
@@ -446,7 +446,7 @@ function App() {
                     </Typography>
                     <Box
                       sx={{
-                        bgcolor: 'rgba(200, 230, 201, 0.3)', // Light green background
+                        bgcolor: 'rgba(245, 216, 150, 0.4)', // Light yellow background
                         borderRadius: 1,
                         p: 3,
                         mb: 2,
@@ -507,10 +507,10 @@ function App() {
               startIcon={<Email />}
               sx={{ 
                 mt: 2,
-                bgcolor: '#C8E6C9', // Pastel green
+                bgcolor: '#E8B4CB', // Pastel pink
                 color: '#2C3E50',
                 '&:hover': {
-                  bgcolor: '#A5D6A7',
+                  bgcolor: '#D18FB0',
                 }
               }}
             >
@@ -521,7 +521,7 @@ function App() {
       </Box>
 
       {/* Footer */}
-      <Box component="footer" sx={{ bgcolor: '#E8B4CB', color: '#2C3E50', py: 6 }}>
+      <Box component="footer" sx={{ bgcolor: '#A8C8EC', color: '#2C3E50', py: 6 }}>
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
