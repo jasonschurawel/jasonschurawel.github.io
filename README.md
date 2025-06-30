@@ -26,7 +26,7 @@ This project follows Google's Material Design 3 guidelines:
 ## 🛠️ Development
 
 ### Prerequisites
-- Node.js (18 or higher)
+- Node.js (20.19.0 or higher)
 - npm
 
 ### Getting Started
@@ -93,7 +93,7 @@ This project includes a GitHub Actions workflow that automatically builds and de
 - **TypeScript 5.8.3** - Type safety and modern JavaScript features
 
 ### Development Dependencies
-- **Vite 7.0.0** - Fast build tool and dev server
+- **Vite 6.0.3** - Fast build tool and dev server (compatible with Node.js 20+)
 - **@vitejs/plugin-react** - React integration for Vite
 - **gh-pages** - GitHub Pages deployment
 
