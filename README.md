@@ -64,12 +64,19 @@ This project includes a GitHub Actions workflow that automatically builds and de
 
 ```
 ├── src/
-│   ├── App.tsx          # Main React component
-│   ├── App.css          # Styling
-│   ├── main.tsx         # React entry point
+│   ├── App.tsx          # Main React component with Material Design 3
+│   ├── App.css          # Custom styles for Material-UI
+│   ├── main.tsx         # React entry point with theme provider
+│   ├── theme.ts         # Material Design 3 theme configuration
 │   └── index.css        # Global styles
 ├── public/
 │   └── favicon.svg      # Website icon
+│   └── api/             # GitHub API data
+│       ├── projects.json         # Live GitHub data
+│       └── projects-fallback.json # Fallback data
+├── server/
+│   ├── main.go          # Go server for GitHub API
+│   └── go.mod           # Go dependencies
 ├── .github/workflows/
 │   └── deploy.yml       # GitHub Actions deployment
 ├── index.html           # HTML template
@@ -80,7 +87,9 @@ This project includes a GitHub Actions workflow that automatically builds and de
 ## 🎨 Customization
 
 - Update the content in `src/App.tsx` to match your projects
-- Modify styles in `src/App.css` and `src/index.css`
+- Modify the Material Design 3 theme in `src/theme.ts`
+- Add custom styles in `src/App.css` (Material-UI compatible)
+- Update global styles in `src/index.css`
 - Replace the favicon in `public/favicon.svg`
 - Update contact information and project links
 
