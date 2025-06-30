@@ -227,8 +227,8 @@ function App() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #6750A4 0%, #21005D 100%)',
-          color: 'white',
+          background: 'linear-gradient(135deg, #A8C8EC 0%, #E8B4CB 100%)',
+          color: '#2C3E50',
           py: 12,
           textAlign: 'center',
         }}
@@ -496,7 +496,7 @@ function App() {
       </Box>
 
       {/* Footer */}
-      <Box component="footer" sx={{ bgcolor: 'primary.dark', color: 'primary.contrastText', py: 6 }}>
+      <Box component="footer" sx={{ bgcolor: '#E8B4CB', color: '#2C3E50', py: 6 }}>
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
@@ -537,10 +537,6 @@ function App() {
               </Link>
             </Grid>
           </Grid>
-          <Divider sx={{ my: 3, bgcolor: 'rgba(255, 255, 255, 0.2)' }} />
-          <Typography variant="body2" textAlign="center" sx={{ opacity: 0.8 }}>
-            Built with React and Material Design 3 • Hosted on GitHub Pages
-          </Typography>
         </Container>
       </Box>
 

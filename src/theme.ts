@@ -5,51 +5,51 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#6750A4', // Material Design 3 Primary
-      light: '#EADDFF',
-      dark: '#21005D',
-      contrastText: '#FFFFFF',
+      main: '#A8C8EC', // Soft pastel blue
+      light: '#C5D6F0',
+      dark: '#7FB3E3',
+      contrastText: '#2C3E50',
     },
     secondary: {
-      main: '#625B71', // Material Design 3 Secondary
-      light: '#E8DEF8',
-      dark: '#1D192B',
-      contrastText: '#FFFFFF',
+      main: '#E8B4CB', // Soft pastel pink
+      light: '#F0C8D4',
+      dark: '#D18FB0',
+      contrastText: '#2C3E50',
     },
     error: {
-      main: '#BA1A1A',
-      light: '#FFDAD6',
-      dark: '#410002',
-      contrastText: '#FFFFFF',
+      main: '#F8B4B4',
+      light: '#FBD2D2',
+      dark: '#E68989',
+      contrastText: '#2C3E50',
     },
     warning: {
-      main: '#8C5000',
-      light: '#FFDBCF',
-      dark: '#2E1500',
-      contrastText: '#FFFFFF',
+      main: '#F5D896',
+      light: '#F8E3B3',
+      dark: '#F1CC79',
+      contrastText: '#2C3E50',
     },
     info: {
-      main: '#006A6B',
-      light: '#9CF0F0',
-      dark: '#002020',
-      contrastText: '#FFFFFF',
+      main: '#B4E5F8',
+      light: '#D2EFFC',
+      dark: '#89D3F4',
+      contrastText: '#2C3E50',
     },
     success: {
-      main: '#146C2E',
-      light: '#B7F2C2',
-      dark: '#002204',
-      contrastText: '#FFFFFF',
+      main: '#C8E6C9', // Soft pastel green
+      light: '#D7EDD8',
+      dark: '#A5D6A7',
+      contrastText: '#2C3E50',
     },
     background: {
-      default: '#FFFBFE', // Material Design 3 Surface
-      paper: '#F7F2FA', // Material Design 3 Surface Container
+      default: '#FDFCFC', // Very soft off-white
+      paper: '#F8F9FA', // Slightly warmer white
     },
     text: {
-      primary: '#1C1B1F',
-      secondary: '#49454F',
-      disabled: '#CAC4D0',
+      primary: '#2C3E50', // Soft dark blue-gray
+      secondary: '#5A6C7D', // Medium blue-gray
+      disabled: '#A5B3C1',
     },
-    divider: '#CAC4D0',
+    divider: 'rgba(200, 230, 201, 0.3)', // Very light pastel green divider
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
