@@ -1,5 +1,35 @@
 import { useState, useEffect } from 'react'
-import './App.css'
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  Box,
+  CircularProgress,
+  Alert,
+  Fab,
+  Divider,
+  Link,
+  IconButton,
+  useScrollTrigger,
+  Slide,
+} from '@mui/material'
+import {
+  Star,
+  CallSplit,
+  OpenInNew,
+  GitHub,
+  Email,
+  KeyboardArrowUp,
+  Code,
+  Update,
+} from '@mui/icons-material'
 
 interface GitHubRepo {
   id: number;
@@ -18,6 +48,51 @@ interface GitHubRepo {
 interface ProjectResponse {
   projects: GitHubRepo[];
   lastUpdated: string;
+}
+
+interface HideOnScrollProps {
+  children: React.ReactElement;
+}
+
+function HideOnScroll({ children }: HideOnScrollProps) {
+  const trigger = useScrollTrigger();
+  return (
+    <Slide appear={false} direction="down" in={!trigger}>
+      {children}
+    </Slide>
+  );
+}
+
+function ScrollToTop() {
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 100,
+  });
+
+  const handleClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  return (
+    <Slide direction="up" in={trigger} mountOnEnter unmountOnExit>
+      <Fab
+        color="primary"
+        size="small"
+        onClick={handleClick}
+        sx={{
+          position: 'fixed',
+          bottom: 16,
+          right: 16,
+          zIndex: 1000,
+        }}
+      >
+        <KeyboardArrowUp />
+      </Fab>
+    </Slide>
+  );
 }
 
 function App() {
@@ -81,179 +156,358 @@ function App() {
     return colors[language] || '#8b949e';
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="header">
-        <nav className="nav">
-          <h1 className="logo">My Projects</h1>
-          <ul className="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </nav>
-      </header>
+    <Box sx={{ flexGrow: 1 }}>
+      <HideOnScroll>
+        <AppBar position="fixed" color="primary" elevation={0}>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
+              My Projects
+            </Typography>
+            <Button color="inherit" onClick={() => scrollToSection('about')}>
+              About
+            </Button>
+            <Button color="inherit" onClick={() => scrollToSection('projects')}>
+              Projects
+            </Button>
+            <Button color="inherit" onClick={() => scrollToSection('contact')}>
+              Contact
+            </Button>
+          </Toolbar>
+        </AppBar>
+      </HideOnScroll>
 
-      <main>
-        <section className="hero">
-          <div className="hero-content">
-            <h2>Welcome to My Project Portfolio</h2>
-            <p>
-              I'm sharing some projects online, starting with small learning and teaching tools, 
-              particularly focused on tax-related applications. I'll be hosting more projects here in the future.
-            </p>
-            <a href="#projects" className="cta-button">View Projects</a>
-          </div>
-        </section>
+      <Toolbar /> {/* Spacer for fixed AppBar */}
 
-        <section id="about" className="about">
-          <div className="container">
-            <h2>About</h2>
-            <p>
-              This portfolio showcases my journey in software development, starting with educational 
-              and practical tools. My current focus is on creating accessible tax calculation tools 
-              that help people learn and understand tax concepts.
-            </p>
-          </div>
-        </section>
+      {/* Hero Section */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #6750A4 0%, #21005D 100%)',
+          color: 'white',
+          py: 12,
+          textAlign: 'center',
+        }}
+      >
+        <Container maxWidth="md">
+          <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 400 }}>
+            Welcome to My Project Portfolio
+          </Typography>
+          <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
+            I'm sharing some projects online, starting with small learning and teaching tools, 
+            particularly focused on tax-related applications. I'll be hosting more projects here in the future.
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => scrollToSection('projects')}
+            sx={{
+              bgcolor: 'rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.3)',
+              },
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+            }}
+          >
+            View Projects
+          </Button>
+        </Container>
+      </Box>
 
-        <section id="projects" className="projects">
-          <div className="container">
-            <h2>Projects</h2>
-            
-            {loading && (
-              <div className="loading">
-                <p>Loading projects from GitHub...</p>
-              </div>
-            )}
+      {/* About Section */}
+      <Box id="about" sx={{ py: 8, bgcolor: 'background.default' }}>
+        <Container maxWidth="md">
+          <Typography variant="h3" component="h2" gutterBottom textAlign="center" sx={{ mb: 4 }}>
+            About
+          </Typography>
+          <Card elevation={0} sx={{ bgcolor: 'background.paper', p: 3 }}>
+            <CardContent>
+              <Typography variant="body1" sx={{ fontSize: '1.1rem', lineHeight: 1.7 }}>
+                This portfolio showcases my journey in software development, starting with educational 
+                and practical tools. My current focus is on creating accessible tax calculation tools 
+                that help people learn and understand tax concepts.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
 
-            {error && (
-              <div className="error">
-                <p>Error loading projects: {error}</p>
-                <p>Showing fallback content...</p>
-              </div>
-            )}
+      {/* Projects Section */}
+      <Box id="projects" sx={{ py: 8, bgcolor: 'background.paper' }}>
+        <Container maxWidth="lg">
+          <Typography variant="h3" component="h2" gutterBottom textAlign="center" sx={{ mb: 6 }}>
+            Projects
+          </Typography>
+          
+          {loading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <CircularProgress size={40} />
+              <Typography variant="body1" sx={{ ml: 2, alignSelf: 'center' }}>
+                Loading projects from GitHub...
+              </Typography>
+            </Box>
+          )}
 
-            <div className="project-grid">
-              {projects.length > 0 ? (
-                projects.map((project) => (
-                  <div key={project.id} className="project-card">
-                    <div className="project-header">
-                      <h3>{project.name}</h3>
-                      {project.language && (
-                        <span 
-                          className="language-badge"
-                          style={{ backgroundColor: getLanguageColor(project.language) }}
-                        >
-                          {project.language}
-                        </span>
-                      )}
-                    </div>
+          {error && (
+            <Alert severity="warning" sx={{ mb: 4 }}>
+              <strong>Error loading projects:</strong> {error}
+              <br />
+              Showing fallback content...
+            </Alert>
+          )}
+
+          <Grid container spacing={3}>
+            {projects.length > 0 ? (
+              projects.map((project) => (
+                <Grid item xs={12} md={6} lg={4} key={project.id}>
+                  <Card 
+                    elevation={0}
+                    sx={{ 
+                      height: '100%', 
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                        <Typography variant="h6" component="h3" gutterBottom>
+                          {project.name}
+                        </Typography>
+                        {project.language && (
+                          <Chip
+                            label={project.language}
+                            size="small"
+                            sx={{
+                              bgcolor: getLanguageColor(project.language),
+                              color: 'white',
+                              fontWeight: 500,
+                            }}
+                          />
+                        )}
+                      </Box>
+                      
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        {project.description || 'No description available'}
+                      </Typography>
+
+                      <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
+                        <Chip
+                          icon={<Star />}
+                          label={project.stargazers_count}
+                          variant="outlined"
+                          size="small"
+                        />
+                        <Chip
+                          icon={<CallSplit />}
+                          label={project.forks_count}
+                          variant="outlined"
+                          size="small"
+                        />
+                      </Box>
+
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Update sx={{ fontSize: 16, mr: 1, color: 'text.secondary' }} />
+                        <Typography variant="caption" color="text.secondary">
+                          Updated: {formatDate(project.updated_at)}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          bgcolor: 'rgba(0, 0, 0, 0.02)',
+                          borderRadius: 1,
+                          p: 2,
+                          mb: 2,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minHeight: 80,
+                        }}
+                      >
+                        <Code sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Typography variant="body2" color="text.secondary">
+                          {project.language || 'Project'} Repository
+                        </Typography>
+                      </Box>
+                    </CardContent>
                     
-                    <p className="project-description">
-                      {project.description || 'No description available'}
-                    </p>
-                    
-                    <div className="project-stats">
-                      <span className="stat">⭐ {project.stargazers_count}</span>
-                      <span className="stat">🔀 {project.forks_count}</span>
-                      <span className="stat">📅 Updated: {formatDate(project.updated_at)}</span>
-                    </div>
-
-                    <div className="project-preview">
-                      <div className="preview-placeholder">
-                        <span>🔧 {project.language || 'Project'} Repository</span>
-                      </div>
-                    </div>
-                    
-                    <div className="project-links">
-                      <a 
-                        href={project.html_url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="project-link"
+                    <CardActions sx={{ p: 2, pt: 0 }}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        href={project.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        endIcon={<OpenInNew />}
+                        fullWidth
                       >
                         View Repository
-                      </a>
-                      <a 
-                        href="https://github.com/jasonschurawel" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="project-link secondary"
-                      >
-                        GitHub Profile
-                      </a>
-                    </div>
-                    
-                    <p className="license-note">License details available on project page</p>
-                  </div>
-                ))
-              ) : !loading && !error && (
-                <div className="no-projects">
-                  <p>No projects found.</p>
-                </div>
-              )}
-              
-              {/* Show a "more projects coming" card if we have projects */}
-              {projects.length > 0 && (
-                <div className="project-card coming-soon">
-                  <h3>More Projects Coming Soon</h3>
-                  <p>I'll be adding more educational and practical tools to this portfolio.</p>
-                  <div className="project-preview">
-                    <div className="preview-placeholder">
-                      <span>🚀 Future Projects</span>
-                    </div>
-                  </div>
-                  <div className="project-links">
-                    <a href="https://github.com/jasonschurawel" target="_blank" rel="noopener noreferrer" className="project-link">
-                      GitHub Profile
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {lastUpdated && (
-              <div className="last-updated">
-                <p>Projects last updated: {formatDate(lastUpdated)}</p>
-              </div>
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))
+            ) : !loading && !error && (
+              <Grid item xs={12}>
+                <Card elevation={0} sx={{ textAlign: 'center', p: 4 }}>
+                  <Typography variant="h6" color="text.secondary">
+                    No projects found.
+                  </Typography>
+                </Card>
+              </Grid>
             )}
-          </div>
-        </section>
+            
+            {/* Show a "more projects coming" card if we have projects */}
+            {projects.length > 0 && (
+              <Grid item xs={12} md={6} lg={4}>
+                <Card 
+                  elevation={0}
+                  sx={{ 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    border: '2px dashed',
+                    borderColor: 'primary.light',
+                    bgcolor: 'primary.light',
+                    opacity: 0.7,
+                  }}
+                >
+                  <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                    <Typography variant="h6" component="h3" gutterBottom color="primary">
+                      More Projects Coming Soon
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                      I'll be adding more educational and practical tools to this portfolio.
+                    </Typography>
+                    <Box
+                      sx={{
+                        bgcolor: 'rgba(103, 80, 164, 0.1)',
+                        borderRadius: 1,
+                        p: 3,
+                        mb: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: 80,
+                      }}
+                    >
+                      <Typography variant="h4">🚀</Typography>
+                      <Typography variant="body2" color="primary" sx={{ ml: 1 }}>
+                        Future Projects
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                  <CardActions sx={{ p: 2, pt: 0 }}>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      href="https://github.com/jasonschurawel"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      endIcon={<GitHub />}
+                      fullWidth
+                    >
+                      GitHub Profile
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            )}
+          </Grid>
 
-        <section id="contact" className="contact">
-          <div className="container">
-            <h2>Get in Touch</h2>
-            <p>Interested in collaborating or have questions about my projects?</p>
-            <a href="mailto:your-email@example.com" className="contact-button">Contact Me</a>
-          </div>
-        </section>
-      </main>
+          {lastUpdated && (
+            <Box sx={{ textAlign: 'center', mt: 4 }}>
+              <Typography variant="body2" color="text.secondary">
+                Projects last updated: {formatDate(lastUpdated)}
+              </Typography>
+            </Box>
+          )}
+        </Container>
+      </Box>
 
-      <footer className="footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-section">
-              <h4>Copyright Notice</h4>
-              <p>&copy; 2025 Jason Schurawel. All rights reserved.</p>
-              <p>This website and its design are protected by copyright.</p>
-            </div>
-            <div className="footer-section">
-              <h4>Project Licenses</h4>
-              <p>Individual projects may have different licenses.</p>
-              <p>Please refer to each project's repository for specific license terms.</p>
-            </div>
-            <div className="footer-section">
-              <h4>Links</h4>
-              <a href="https://github.com/jasonschurawel" target="_blank" rel="noopener noreferrer">GitHub Profile</a>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>Built with React and hosted on GitHub Pages</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+      {/* Contact Section */}
+      <Box id="contact" sx={{ py: 8, bgcolor: 'background.default' }}>
+        <Container maxWidth="md">
+          <Typography variant="h3" component="h2" gutterBottom textAlign="center" sx={{ mb: 4 }}>
+            Get in Touch
+          </Typography>
+          <Card elevation={0} sx={{ bgcolor: 'background.paper', p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" gutterBottom>
+              Interested in collaborating or have questions about my projects?
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              href="mailto:your-email@example.com"
+              startIcon={<Email />}
+              sx={{ mt: 2 }}
+            >
+              Contact Me
+            </Button>
+          </Card>
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Box component="footer" sx={{ bgcolor: 'primary.dark', color: 'primary.contrastText', py: 6 }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={4}>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom>
+                Copyright Notice
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                © 2025 Jason Schurawel. All rights reserved.
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                This website and its design are protected by copyright.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom>
+                Project Licenses
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                Individual projects may have different licenses.
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                Please refer to each project's repository for specific license terms.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Typography variant="h6" gutterBottom>
+                Links
+              </Typography>
+              <Link
+                href="https://github.com/jasonschurawel"
+                target="_blank"
+                rel="noopener noreferrer"
+                color="inherit"
+                sx={{ display: 'flex', alignItems: 'center', opacity: 0.8, '&:hover': { opacity: 1 } }}
+              >
+                <GitHub sx={{ mr: 1 }} />
+                GitHub Profile
+              </Link>
+            </Grid>
+          </Grid>
+          <Divider sx={{ my: 3, bgcolor: 'rgba(255, 255, 255, 0.2)' }} />
+          <Typography variant="body2" textAlign="center" sx={{ opacity: 0.8 }}>
+            Built with React and Material Design 3 • Hosted on GitHub Pages
+          </Typography>
+        </Container>
+      </Box>
+
+      <ScrollToTop />
+    </Box>
   )
 }
 

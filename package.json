@@ -8,7 +8,8 @@
     "build:static": "./build-static.sh",
     "preview": "vite preview",
     "deploy": "npm run build:static && gh-pages -d dist",
-    "deploy:dev": "npm run build && gh-pages -d dist"
+    "deploy:dev": "npm run build && gh-pages -d dist",
+    "type-check": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -25,6 +26,11 @@
   "dependencies": {
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@mui/material": "^6.1.6",
+    "@mui/system": "^6.1.6",
+    "@mui/icons-material": "^6.1.6",
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "typescript": "^5.8.3"
