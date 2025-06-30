@@ -105,6 +105,8 @@ function App() {
       try {
         // Try local API first (for development)
         let response;
+        let responseText = '';
+        
         try {
           response = await fetch('http://localhost:8080/api/projects');
           if (!response.ok) throw new Error('API not available');
@@ -116,11 +118,41 @@ function App() {
           }
         }
         
-        const data: ProjectResponse = await response.json();
+        // Get the response as text first to debug any issues
+        responseText = await response.text();
+        
+        // Trim any whitespace and check for empty response
+        responseText = responseText.trim();
+        if (!responseText) {
+          throw new Error('Empty response received');
+        }
+        
+        // Try to parse JSON with better error handling
+        let data: ProjectResponse;
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('JSON Parse Error:', parseError);
+          console.error('Response text:', responseText);
+          console.error('Response text length:', responseText.length);
+          console.error('First 100 chars:', responseText.substring(0, 100));
+          throw new Error(`Invalid JSON format: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`);
+        }
+        
+        // Validate data structure
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid data structure received');
+        }
+        
+        if (!Array.isArray(data.projects)) {
+          throw new Error('Projects data is not an array');
+        }
+        
         setProjects(data.projects);
-        setLastUpdated(data.lastUpdated);
+        setLastUpdated(data.lastUpdated || '');
         setLoading(false);
       } catch (err) {
+        console.error('Fetch error:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch projects');
         setLoading(false);
       }
