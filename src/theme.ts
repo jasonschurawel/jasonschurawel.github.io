@@ -212,7 +212,9 @@ const darkTheme = createTheme({
     },
     divider: '#938F99',
   },
-  ...theme, // Inherit typography, shape, and components from light theme
+  typography: theme.typography,
+  shape: theme.shape,
+  components: theme.components,
 });
 
 export { darkTheme };
