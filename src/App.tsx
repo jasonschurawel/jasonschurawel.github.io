@@ -177,20 +177,20 @@ function App() {
 
   const getLanguageColor = (language: string) => {
     const colors: { [key: string]: string } = {
-      'JavaScript': '#f1e05a',
-      'TypeScript': '#3178c6',
-      'Python': '#3572A5',
-      'Go': '#00ADD8',
-      'Java': '#b07219',
-      'Ruby': '#701516',
-      'PHP': '#4F5D95',
-      'C++': '#f34b7d',
-      'C': '#555555',
-      'HTML': '#e34c26',
-      'CSS': '#1572B6',
-      'Shell': '#89e051',
+      'JavaScript': '#F5D896', // Pastel yellow
+      'TypeScript': '#A8C8EC', // Pastel blue
+      'Python': '#C8E6C9', // Pastel green
+      'Go': '#E8B4CB', // Pastel pink
+      'Java': '#F8B4B4', // Pastel red
+      'Ruby': '#F5D896', // Pastel yellow
+      'PHP': '#B4E5F8', // Pastel cyan
+      'C++': '#E8B4CB', // Pastel pink
+      'C': '#A8C8EC', // Pastel blue
+      'HTML': '#F8B4B4', // Pastel red
+      'CSS': '#A8C8EC', // Pastel blue
+      'Shell': '#C8E6C9', // Pastel green
     };
-    return colors[language] || '#8b949e';
+    return colors[language] || '#F5D896'; // Default to pastel yellow
   };
 
   const scrollToSection = (sectionId: string) => {
@@ -206,13 +206,32 @@ function App() {
         <AppBar position="fixed" color="primary" elevation={0}>
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
-              My Projects
+              Open Projects by Jason A. Schurawel
             </Typography>
             <Button color="inherit" onClick={() => scrollToSection('about')}>
               About
             </Button>
-            <Button color="inherit" onClick={() => scrollToSection('projects')}>
+            <Button 
+              color="inherit" 
+              onClick={() => scrollToSection('projects')}
+              sx={{ position: 'relative' }}
+            >
               Projects
+              {projects.length > 0 && (
+                <Chip
+                  label={projects.length}
+                  size="small"
+                  sx={{
+                    ml: 1,
+                    bgcolor: '#C8E6C9', // Soft green
+                    color: '#2C3E50',
+                    fontWeight: 500,
+                    fontSize: '0.75rem',
+                    height: 20,
+                    minWidth: 20,
+                  }}
+                />
+              )}
             </Button>
             <Button color="inherit" onClick={() => scrollToSection('contact')}>
               Contact
@@ -226,7 +245,7 @@ function App() {
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #A8C8EC 0%, #E8B4CB 100%)',
+          bgcolor: '#A8C8EC', // Solid pastel blue
           color: '#2C3E50',
           py: 12,
           textAlign: 'center',
@@ -325,7 +344,7 @@ function App() {
                             size="small"
                             sx={{
                               bgcolor: getLanguageColor(project.language),
-                              color: 'white',
+                              color: '#2C3E50',
                               fontWeight: 500,
                             }}
                           />
@@ -427,7 +446,7 @@ function App() {
                     </Typography>
                     <Box
                       sx={{
-                        bgcolor: 'rgba(103, 80, 164, 0.1)',
+                        bgcolor: 'rgba(200, 230, 201, 0.3)', // Light green background
                         borderRadius: 1,
                         p: 3,
                         mb: 2,
@@ -486,7 +505,14 @@ function App() {
               size="large"
               href="mailto:your-email@example.com"
               startIcon={<Email />}
-              sx={{ mt: 2 }}
+              sx={{ 
+                mt: 2,
+                bgcolor: '#C8E6C9', // Pastel green
+                color: '#2C3E50',
+                '&:hover': {
+                  bgcolor: '#A5D6A7',
+                }
+              }}
             >
               Contact Me
             </Button>
