@@ -126,6 +126,14 @@ function App() {
         if (!responseText) {
           throw new Error('Empty response received');
         }
+
+        // Clean up any extra content that might be appended (like "HTTP Status: 200")
+        if (responseText.includes('HTTP Status:')) {
+          const jsonEndIndex = responseText.lastIndexOf('}');
+          if (jsonEndIndex !== -1) {
+            responseText = responseText.substring(0, jsonEndIndex + 1);
+          }
+        }
         
         // Parse JSON
         let data: ProjectResponse;
